@@ -26,6 +26,7 @@ function loadAssets(callback) {
     }
     sprites.background = loadSprite('novus_galds.png');
     sprites.stick = loadSprite("stick.png");
+    sprites.main_ball = loadSprite('govs.png');
 
     assetsLoadingLoop(callback);
 
