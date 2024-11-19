@@ -17,3 +17,7 @@ Vector2.prototype.mult = function(scalar){
 
     return new Vector2(this.x * scalar, this.y * scalar);
 }
+
+Vector2.prototype.lenght = function(){
+    return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+}

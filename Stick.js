@@ -8,6 +8,7 @@ function Stick(position, onShoot){
     this.origin = stick_origin.copy();
     this.power = 0;
     this.onShoot = onShoot;
+    this.shot = false;
 }
 
 Stick.prototype.update = function(){
@@ -44,5 +45,13 @@ Stick.prototype.shoot = function(){
     this.onShoot(this.power, this.rotation);
     this.power = 0;
     this.origin = stick_shot_origin.copy();
+    this.shot = true;
 
+}
+
+Stick.prototype.reposition = function(position){
+
+    this.position = position.copy();
+    this.origin = stick_origin.copy();
+    this.shot = false;
 }
