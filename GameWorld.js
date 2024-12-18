@@ -2,13 +2,51 @@ const delta = 1/100;
 
 function GameWorld(){
 
-    this.main_ball = new Ball(new Vector2(413, 413), COLOR.big_black);
+    this.balls = [
+        [new Vector2(253,50),COLOR.black],
+        [new Vector2(273,50),COLOR.black],
+        [new Vector2(293,50),COLOR.black],
+        [new Vector2(313,50),COLOR.black],
+        [new Vector2(333,50),COLOR.black],
+        [new Vector2(353,50),COLOR.black],
+        [new Vector2(373,50),COLOR.black],
+        [new Vector2(393,50),COLOR.black],
+
+        [new Vector2(253,592),COLOR.red],
+        [new Vector2(273,592),COLOR.red],
+        [new Vector2(293,592),COLOR.red],
+        [new Vector2(313,592),COLOR.red],
+        [new Vector2(333,592),COLOR.red],
+        [new Vector2(353,592),COLOR.red],
+        [new Vector2(373,592),COLOR.red],
+        [new Vector2(393,592),COLOR.red],
+
+        [new Vector2(413,413),COLOR.big_black],
+
+    ].map(params => new Ball (params[0], params[1]))
+
+    this.main_ball = this.balls[this.balls.length - 1];
     this.stick = new Stick(new Vector2(413, 413), this.main_ball.shoot.bind(this.main_ball));
+}
+
+GameWorld.prototype.handleCollisions = function(){
+    for(let i = 0; i < this.balls.length; i++){
+        for(let j = i + 1; j < this.balls.length; j++){
+            const firstBall = this.balls[i];
+            const secondBall = this.balls[j];
+            firstBall.collideWith(secondBall);
+        }
+    }
 }
 
 GameWorld.prototype.update = function(){
 
-    this.main_ball.update(delta);
+    this.handleCollisions();
+
+    for(let i = 0; i < this.balls.length; i++){
+        this.balls[i].update(delta);
+    }
+        
     this.stick.update();
 
     if(!this.ballsMoving() && this.stick.shot){
@@ -21,10 +59,21 @@ GameWorld.prototype.draw = function(){
     Canvas.drawImage(sprites.background, {x:0, y:0});
     
     this.stick.draw();
-    this.main_ball.draw();
+    for(let i = 0; i < this.balls.length; i++){
+        this.balls[i].draw(delta);
+    }
+        
 
 }
 
 GameWorld.prototype.ballsMoving = function(){
-    return this.main_ball.moving;
+    let ballsMoving = false;
+
+    for(let i = 0; i < this.balls.length; i++){
+        if(this.balls[i].moving){
+            ballsMoving = true;
+            break;
+        }
+    }
+    return ballsMoving;
 }
