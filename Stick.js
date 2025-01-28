@@ -1,7 +1,7 @@
 
-const stick_origin = new Vector2(960, 11);
-const stick_shot_origin = new Vector2(950, 11);
-const MAX_POWER = 1800;
+const stick_origin = new Vector2(2000, 22);
+const stick_shot_origin = new Vector2(2000, 22);
+const MAX_POWER = 3200;
 
 function Stick(position, onShoot){
     this.position = position;

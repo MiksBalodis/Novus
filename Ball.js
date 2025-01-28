@@ -1,6 +1,6 @@
-const ball_origin = new Vector2(15, 15);
-const BIG_BALL = 30;
-const SMALL_BALL = 20;
+const ball_origin = new Vector2(30, 30);
+const BIG_BALL = 60;
+const SMALL_BALL = 40;
 const BIG_BALL_RADIUS = BIG_BALL/2;
 const SMALL_BALL_RADIUS = SMALL_BALL/2;
 const SBballrad = SMALL_BALL_RADIUS+BIG_BALL_RADIUS;
@@ -130,8 +130,8 @@ Ball.prototype.collideWithBallBig = function(ball){
     
     this.velocity = v1nTag.add(v1tTag);
     ball.velocity = v2nTag.add(v2tTag);
-    this.velocity = v1nTag.mult(0.6);
-    ball.velocity = v2nTag.mult(0.6);
+    this.velocity = v1nTag.mult(0.9);
+    ball.velocity = v2nTag.mult(0.9);
     this.moving = true;
     ball.moving = true;
   
@@ -145,28 +145,28 @@ Ball.prototype.collideWithTable = function(table){
 
     let collided = false;
 
-    if(this.position.y-10 <= table.TopY + SMALL_BALL_RADIUS){
+    if(this.position.y <= table.TopY + SMALL_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x+10 >= table.RightX - SMALL_BALL_RADIUS){
+    if(this.position.x >= table.RightX - SMALL_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
-    if(this.position.y+10 >= table.BottomY - SMALL_BALL_RADIUS){
+    if(this.position.y >= table.BottomY - SMALL_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x-10 <= table.LeftX + SMALL_BALL_RADIUS){
+    if(this.position.x <= table.LeftX + SMALL_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
     if(collided){
-        this.velocity = this.velocity.mult(1);
+        this.velocity = this.velocity.mult(0.99);
     }
 }
 
@@ -178,28 +178,28 @@ Ball.prototype.collideWithTableBig = function(table){
 
     let collided = false;
 
-    if(this.position.y-10 <= table.TopY + BIG_BALL_RADIUS){
+    if(this.position.y <= table.TopY + BIG_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x+10 >= table.RightX - BIG_BALL_RADIUS){
+    if(this.position.x >= table.RightX - BIG_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
-    if(this.position.y+10 >= table.BottomY - BIG_BALL_RADIUS){
+    if(this.position.y >= table.BottomY - BIG_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x-10 <= table.LeftX + BIG_BALL_RADIUS){
+    if(this.position.x <= table.LeftX + BIG_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
     if(collided){
-        this.velocity = this.velocity.mult(0.975);
+        this.velocity = this.velocity.mult(0.965);
     }
 }
 

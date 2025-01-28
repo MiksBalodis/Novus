@@ -24,12 +24,12 @@ function loadAssets(callback) {
 
         return spriteImage;
     }
-    sprites.background = loadSprite('novus_galds.png');
-    sprites.stick = loadSprite("stick.png");
-    sprites.main_ball = loadSprite('govs.png');
-    sprites.main_ball_red = loadSprite('govs-sarkana.png')
-    sprites.small_red = loadSprite('small_red.png');
-    sprites.small_black = loadSprite('small_black.png');
+    sprites.background = loadSprite('novus_galds-jauns.png');
+    sprites.stick = loadSprite("stick-jauns.png");
+    sprites.main_ball = loadSprite('govs-jauns.png');
+    sprites.main_ball_red = loadSprite('govs-sarkana-jauns.png')
+    sprites.small_red = loadSprite('small_red-jauns.png');
+    sprites.small_black = loadSprite('small_black-jauns.png');
 
     assetsLoadingLoop(callback);
 
