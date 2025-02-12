@@ -13,12 +13,12 @@ function Ball(position, color){
 }
 
 Ball.prototype.update = function(delta){ 
-    this.position.addTo(this.velocity.mult(delta));
+    this.position = this.position.add(this.velocity.mult(delta));
 
     //berzes speeks
     this.velocity = this.velocity.mult(0.975); 
 
-    if(this.velocity.lenght() < 10){
+    if(this.velocity.lenght() < 5){ //bumba apstāsies kad ātrums būs mazāks par ...
         this.velocity = new Vector2();
         this.moving = false;
     }
@@ -34,55 +34,55 @@ Ball.prototype.shoot = function(power, rotation){
     this.moving = true;
 }
 
-Ball.prototype.collideWithBall = function(ball){
-
-    //normalvektors
+Ball.prototype.collideWithBall = function(ball) {
+    // normalvektors
     const n = this.position.subtract(ball.position);
-
-    //distance
+    
+    // attālums starp bumbām
     const distance = n.lenght();
 
-    if(distance > SMALL_BALL){
-        return;
-    }
-    
+    // mazākais atlautais attālums, lai "nesaliptu"
+    const minDistance = SMALL_BALL;
 
-    //mazakaa distance ko objekts var pakusteeties
-    const mtd = n.mult((SMALL_BALL - distance)/distance);
+    if (distance >= minDistance) return;
 
-    //bumbas kaut kas neliip kopaa
-    this.position = this.position.add(mtd.mult(1/2));
-    ball.position = ball.position.subtract(mtd.mult(1/2));
+    // "overlaps"
+    const overlap = minDistance - distance;
 
-    //unit normal vektors
-    const unit = n.mult(1/n.lenght());
+    // kad "overlaps" atgrūzt bumbas vienādi
+    const correction = n.mult(overlap / (2 * distance)); 
+    this.position = this.position.add(correction);
+    ball.position = ball.position.subtract(correction);
 
-    //unit tangent vektors
+    // "normalizēt" normālvektorus un tan vektorus
+    const unit = n.mult(1 / distance);
     const tangent = new Vector2(-unit.y, unit.x);
 
-    //projicee atrumus uz unit normalvektoriem un unit tangent vektoriem
+    // projicē vektorus
     const v1n = unit.dot(this.velocity);
     const v1t = tangent.dot(this.velocity);
     const v2n = unit.dot(ball.velocity);
     const v2t = tangent.dot(ball.velocity);
 
-    //jaunie normal atrumi
+    // apgriež vektoru komponentes
     let v1nTag = v2n;
     let v2nTag = v1n;
-    
-    //skalarie (normal un tangengt) atrumi ==> vektoriem
-    v1nTag = unit.mult(v1nTag*0.96);
+
+    // neliels enerģijas zudums
+    v1nTag = unit.mult(v1nTag * 0.96);
+    v2nTag = unit.mult(v2nTag * 0.96);
+
+    // atpakal uz parastajiem vektoriem
     const v1tTag = tangent.mult(v1t);
-    v2nTag = unit.mult(v2nTag*0.96);
     const v2tTag = tangent.mult(v2t);
 
-    //updatojam atrumus
+    // updatot ātrumus
     this.velocity = v1nTag.add(v1tTag);
     ball.velocity = v2nTag.add(v2tTag);
     this.moving = true;
     ball.moving = true;
-   
-}
+};
+
 
 Ball.prototype.collideWithBallBig = function(ball){
 
@@ -100,7 +100,7 @@ Ball.prototype.collideWithBallBig = function(ball){
     //mazakaa distance ko objekts var pakusteeties
     const mtd = n.mult((SBballrad - distance)/distance);
 
-    //bumbas kaut kas neliip kopaa
+    //bumbas neliip kopaa
     this.position = this.position.add(mtd.mult(1/2));
     ball.position = ball.position.subtract(mtd.mult(1/2));
 
@@ -138,37 +138,42 @@ Ball.prototype.collideWithBallBig = function(ball){
     
 }
 
-Ball.prototype.collideWithTable = function(table){
-    if(!this.moving){
-        return;
-    }
+Ball.prototype.collideWithTable = function(table) {
+    if (!this.moving) return;
 
     let collided = false;
 
-    if(this.position.y <= table.TopY + SMALL_BALL_RADIUS){
-        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+    //pushot bumbu prom, ja ir sienā
+    if (this.position.y < table.TopY + SMALL_BALL_RADIUS) {
+        this.position.y = table.TopY + SMALL_BALL_RADIUS;
+        this.velocity.y = -this.velocity.y * 0.9; //neliels energijas zudums
         collided = true;
     }
 
-    if(this.position.x >= table.RightX - SMALL_BALL_RADIUS){
-        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
+    if (this.position.x > table.RightX - SMALL_BALL_RADIUS) {
+        this.position.x = table.RightX - SMALL_BALL_RADIUS; 
+        this.velocity.x = -this.velocity.x * 0.9;
         collided = true;
     }
 
-    if(this.position.y >= table.BottomY - SMALL_BALL_RADIUS){
-        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
+    if (this.position.y > table.BottomY - SMALL_BALL_RADIUS) {
+        this.position.y = table.BottomY - SMALL_BALL_RADIUS;
+        this.velocity.y = -this.velocity.y * 0.9;
         collided = true;
     }
 
-    if(this.position.x <= table.LeftX + SMALL_BALL_RADIUS){
-        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
+    if (this.position.x < table.LeftX + SMALL_BALL_RADIUS) {
+        this.position.x = table.LeftX + SMALL_BALL_RADIUS;
+        this.velocity.x = -this.velocity.x * 0.9;
         collided = true;
     }
 
-    if(collided){
-        this.velocity = this.velocity.mult(0.99);
+    // neliela berze
+    if (collided) {
+        this.velocity = this.velocity.mult(0.98); 
     }
-}
+};
+
 
 
 Ball.prototype.collideWithTableBig = function(table){
@@ -178,28 +183,28 @@ Ball.prototype.collideWithTableBig = function(table){
 
     let collided = false;
 
-    if(this.position.y <= table.TopY + BIG_BALL_RADIUS){
+    if(this.position.y = table.TopY + BIG_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x >= table.RightX - BIG_BALL_RADIUS){
+    if(this.position.x = table.RightX - BIG_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
-    if(this.position.y >= table.BottomY - BIG_BALL_RADIUS){
+    if(this.position.y = table.BottomY - BIG_BALL_RADIUS){
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
         collided = true;
     }
 
-    if(this.position.x <= table.LeftX + BIG_BALL_RADIUS){
+    if(this.position.x = table.LeftX + BIG_BALL_RADIUS){
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
         collided = true;
     }
 
     if(collided){
-        this.velocity = this.velocity.mult(0.965);
+        this.velocity = this.velocity.mult(0.98);
     }
 }
 

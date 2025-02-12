@@ -37,27 +37,25 @@ function GameWorld(){
     }
 }
 
-GameWorld.prototype.handleCollisions = function(){
-    for(let i = 0; i < this.balls.length; i++){
+GameWorld.prototype.handleCollisions = function() {
+    const bigBall = this.balls[this.balls.length - 1]; // pasaka kura ir lielā bumba listā
+
+    for (let i = 0; i < this.balls.length; i++) {
         this.balls[i].collideWith(this.table);
-        for(let j = i + 1; j < this.balls.length; j++){
-            this.balls[j].collideWith(this.table);
-            if(j!=this.balls.length-1)
-                {
-               const firstBall = this.balls[i];
-               const secondBall = this.balls[j];
-                firstBall.collideWith(secondBall);
-                }
-            else
-            {
-                const firstBall = this.balls[i];
-               const secondBall = this.balls[j];
+
+        for (let j = i + 1; j < this.balls.length; j++) {
+            const firstBall = this.balls[i];
+            const secondBall = this.balls[j];
+
+            // ja lielā bumba satriecas, izmantot bigball funkciju
+            if (secondBall === bigBall) {
                 firstBall.collideWithBig(secondBall);
-            }    
-            
+            } else {
+                firstBall.collideWith(secondBall);
+            }
         }
     }
-}
+};
 
 GameWorld.prototype.update = function(){
 
