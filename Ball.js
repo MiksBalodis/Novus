@@ -150,14 +150,14 @@ Ball.prototype.collideWithTable = function(table) {
         collided = true;
     }
 
-    if (this.position.x > table.RightX - SMALL_BALL_RADIUS) {
-        this.position.x = table.RightX - SMALL_BALL_RADIUS; 
+    if (this.position.x > table.RightX) {
+        this.position.x = table.RightX; 
         this.velocity.x = -this.velocity.x * 0.9;
         collided = true;
     }
 
-    if (this.position.y > table.BottomY - SMALL_BALL_RADIUS) {
-        this.position.y = table.BottomY - SMALL_BALL_RADIUS;
+    if (this.position.y > table.BottomY) {
+        this.position.y = table.BottomY;
         this.velocity.y = -this.velocity.y * 0.9;
         collided = true;
     }

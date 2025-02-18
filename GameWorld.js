@@ -1,7 +1,10 @@
 const delta = 1/80;
+const HOLE_RADIUS = 60;
 
 function GameWorld(){
 
+    //ievietojam bumbas
+    //vidus koordinātas ir (643,639)
     this.balls = [
         [new Vector2(510,104),COLOR.black],
         [new Vector2(550,104),COLOR.black],
@@ -19,7 +22,7 @@ function GameWorld(){
         [new Vector2(670,1180),COLOR.red],
         [new Vector2(710,1180),COLOR.red],
         [new Vector2(750,1180),COLOR.red],
-        [new Vector2(790,500),COLOR.red],
+        [new Vector2(790,1180),COLOR.red],
 
         [new Vector2(635,1040),COLOR.big_black],
 
@@ -35,19 +38,58 @@ function GameWorld(){
         BottomY: 1188, 
         LeftX: 80
     }
+
+
+    //caurumu pozīcijas
+    this.holes = [
+        new Vector2(140, 142), //top left
+        new Vector2(1112, 142), //top right
+        new Vector2(140, 1128), //bottom left
+        new Vector2(1112, 1128) //bottom right
+    ];
+    
 }
 
+Ball.prototype.isInHole = function(holes) {
+    for (let i = 0; i < holes.length; i++) {
+        const hole = holes[i];
+        const distance = this.position.subtract(hole).lenght(); //attālums līdz caurumam
+
+        if (distance <= HOLE_RADIUS) {
+            return true;
+        }
+    }
+    return false;
+};
+
+
+
 GameWorld.prototype.handleCollisions = function() {
-    const bigBall = this.balls[this.balls.length - 1]; // pasaka kura ir lielā bumba listā
+    const bigBall = this.balls[this.balls.length - 1]; //nosaka lielo bumbu no saraksta (pēdējā)
 
-    for (let i = 0; i < this.balls.length; i++) {
-        this.balls[i].collideWith(this.table);
+    for (let i = this.balls.length - 1; i >= 0; i--) {
+        let ball = this.balls[i];
 
+        //vai bumba iekrīt caurumā
+        if (ball.isInHole(this.holes)) {
+            if (ball === bigBall) {
+                //ja lielā bumba iekrīt caurumā
+                ball.position = new Vector2(635,1040); //ressetot "sitiena pozīcijā"
+                ball.velocity = new Vector2(0, 0); //apstādināt
+            } else {
+                this.balls.splice(i, 1);
+            }
+            continue;
+        }
+
+        //bumbas pret sienām collisioni
+        ball.collideWith(this.table);
+
+        //bumbu pret bumbu collisioni
         for (let j = i + 1; j < this.balls.length; j++) {
-            const firstBall = this.balls[i];
-            const secondBall = this.balls[j];
+            let firstBall = this.balls[i];
+            let secondBall = this.balls[j];
 
-            // ja lielā bumba satriecas, izmantot bigball funkciju
             if (secondBall === bigBall) {
                 firstBall.collideWithBig(secondBall);
             } else {
@@ -56,6 +98,7 @@ GameWorld.prototype.handleCollisions = function() {
         }
     }
 };
+
 
 GameWorld.prototype.update = function(){
 
