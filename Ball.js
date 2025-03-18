@@ -19,9 +19,10 @@ Ball.prototype.update = function(delta){
     this.velocity = this.velocity.mult(0.975); 
 
     if(this.velocity.lenght() < 5){ //bumba apstāsies kad ātrums būs mazāks par ...
-        this.velocity = new Vector2();
+        this.velocity.lenght = 0;
         this.moving = false;
     }
+    
 }
 
 Ball.prototype.draw = function(){
@@ -134,79 +135,44 @@ Ball.prototype.collideWithBallBig = function(ball){
     ball.velocity = v2nTag.mult(0.9);
     this.moving = true;
     ball.moving = true;
-  
-    
+     
 }
 
-Ball.prototype.collideWithTable = function(table) {
+Ball.prototype.resolveTableCollision = function(table, radius) {
     if (!this.moving) return;
 
     let collided = false;
 
-    //pushot bumbu prom, ja ir sienā
-    if (this.position.y < table.TopY + SMALL_BALL_RADIUS) {
-        this.position.y = table.TopY + SMALL_BALL_RADIUS;
-        this.velocity.y = -this.velocity.y * 0.9; //neliels energijas zudums
+    if (this.position.y < table.TopY + radius) {
+        this.position.y = table.TopY + radius;
+        this.velocity.y *= -0.9; // nedaudz zaudē enerģiju
         collided = true;
     }
 
-    if (this.position.x > table.RightX) {
-        this.position.x = table.RightX; 
-        this.velocity.x = -this.velocity.x * 0.9;
+    if (this.position.x > table.RightX - radius) {
+        this.position.x = table.RightX - radius;
+        this.velocity.x *= -0.9;
         collided = true;
     }
 
-    if (this.position.y > table.BottomY) {
-        this.position.y = table.BottomY;
-        this.velocity.y = -this.velocity.y * 0.9;
+    if (this.position.y > table.BottomY - radius) {
+        this.position.y = table.BottomY - radius;
+        this.velocity.y *= -0.9;
         collided = true;
     }
 
-    if (this.position.x < table.LeftX + SMALL_BALL_RADIUS) {
-        this.position.x = table.LeftX + SMALL_BALL_RADIUS;
-        this.velocity.x = -this.velocity.x * 0.9;
+    if (this.position.x < table.LeftX + radius) {
+        this.position.x = table.LeftX + radius;
+        this.velocity.x *= -0.9;
         collided = true;
     }
 
-    // neliela berze
+    //berze
     if (collided) {
-        this.velocity = this.velocity.mult(0.98); 
+        this.velocity = this.velocity.mult(0.98);
     }
 };
 
-
-
-Ball.prototype.collideWithTableBig = function(table){
-    if(!this.moving){
-        return;
-    }
-
-    let collided = false;
-
-    if(this.position.y = table.TopY + BIG_BALL_RADIUS){
-        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
-        collided = true;
-    }
-
-    if(this.position.x = table.RightX - BIG_BALL_RADIUS){
-        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
-        collided = true;
-    }
-
-    if(this.position.y = table.BottomY - BIG_BALL_RADIUS){
-        this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
-        collided = true;
-    }
-
-    if(this.position.x = table.LeftX + BIG_BALL_RADIUS){
-        this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
-        collided = true;
-    }
-
-    if(collided){
-        this.velocity = this.velocity.mult(0.98);
-    }
-}
 
 Ball.prototype.collideWith = function(object){
 
@@ -218,6 +184,7 @@ Ball.prototype.collideWith = function(object){
     }
 
 }
+
 Ball.prototype.collideWithBig = function(object){
 
     if(object instanceof Ball){

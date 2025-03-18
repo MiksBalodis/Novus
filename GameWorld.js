@@ -1,5 +1,9 @@
 const delta = 1/80;
 const HOLE_RADIUS = 60;
+let turn = 1;
+
+const POSITION_Y_1 = 220;
+const POSITION_Y_2 = 1040;
 
 function GameWorld(){
 
@@ -24,30 +28,31 @@ function GameWorld(){
         [new Vector2(750,1180),COLOR.red],
         [new Vector2(790,1180),COLOR.red],
 
-        [new Vector2(635,1040),COLOR.big_black],
+        [new Vector2(635,1040),COLOR.big_red],
 
     ].map(params => new Ball (params[0], params[1]))
 
     this.main_ball = this.balls[this.balls.length - 1];
 
-    this.stick = new Stick(new Vector2(635, 1040), this.main_ball.shoot.bind(this.main_ball));
+    this.stick = new Stick(new Vector2(635, 220), this.main_ball.shoot.bind(this.main_ball));
 
     this.table = {
         TopY: 82,
-        RightX: 1182,
-        BottomY: 1188, 
+        RightX: 1194,
+        BottomY: 1194, 
         LeftX: 80
     }
 
 
     //caurumu pozīcijas
     this.holes = [
-        new Vector2(140, 142), //top left
-        new Vector2(1112, 142), //top right
-        new Vector2(140, 1128), //bottom left
-        new Vector2(1112, 1128) //bottom right
+        new Vector2(150, 148), //top left
+        new Vector2(1120, 148), //top right
+        new Vector2(148, 1118), //bottom left
+        new Vector2(1120, 1118) //bottom right
     ];
     
+    this.positioningBall = true;
 }
 
 Ball.prototype.isInHole = function(holes) {
@@ -83,7 +88,13 @@ GameWorld.prototype.handleCollisions = function() {
         }
 
         //bumbas pret sienām collisioni
-        ball.collideWith(this.table);
+        if (ball === bigBall) {
+            ball.resolveTableCollision(this.table, BIG_BALL_RADIUS);
+        } else {
+            ball.resolveTableCollision(this.table, SMALL_BALL_RADIUS);
+        }
+        
+        
 
         //bumbu pret bumbu collisioni
         for (let j = i + 1; j < this.balls.length; j++) {
@@ -99,21 +110,66 @@ GameWorld.prototype.handleCollisions = function() {
     }
 };
 
+GameWorld.prototype.handleBallPositioning = function() {
+    const horizontalLineY = (turn % 2 === 1) ? 1040 : 220;
 
-GameWorld.prototype.update = function(){
+    this.main_ball.position.x = Math.max(this.table.LeftX + 150, Math.min(Mouse.position.x, this.table.RightX - 155));
+    
+    this.main_ball.position.y = horizontalLineY;
+
+    const oppositeSideY = (turn % 2 === 1) ? 220 : 1040;
+
+    const angle = Math.atan2(oppositeSideY - this.main_ball.position.y, this.main_ball.position.x - Mouse.position.x);
+
+    this.stick.position = this.main_ball.position.copy();
+    this.stick.rotation = angle;
+
+    if (Mouse.left.pressed) {
+        this.positioningBall = false;
+        this.stick.position = this.main_ball.position.copy();
+    }
+};
+
+
+
+
+
+
+GameWorld.prototype.update = function() {
+    if (this.positioningBall) {
+        this.handleBallPositioning();
+    }
 
     this.handleCollisions();
 
-    for(let i = 0; i < this.balls.length; i++){
+    for (let i = 0; i < this.balls.length; i++) {
         this.balls[i].update(delta);
     }
-        
-    this.stick.update();
 
-    if(!this.ballsMoving() && this.stick.shot){
-        this.stick.reposition(this.main_ball.position)
+    if (!this.positioningBall) {
+        this.stick.update();
     }
-}
+
+    if (!this.ballsMoving() && this.stick.shot) {
+        if (turn % 2 === 1) {
+            this.main_ball.position = new Vector2(635, 1040);
+            this.main_ball.sprite = sprites.main_ball;
+        } else {
+            this.main_ball.position = new Vector2(635, 220);
+            this.main_ball.sprite = sprites.main_ball_red;
+        }
+
+        turn++;
+
+        this.stick.reposition(this.main_ball.position);
+
+        this.positioningBall = true;
+    }
+};
+
+
+
+
 
 GameWorld.prototype.draw = function(){
 

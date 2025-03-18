@@ -26,4 +26,3 @@ Canvas2D.prototype.drawImage = function(image, position, origin, rotation = 0){
 }
 
 let Canvas = new Canvas2D();
-    
