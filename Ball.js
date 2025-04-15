@@ -12,28 +12,32 @@ function Ball(position, color){
     this.sprite = getBallSpriteByColor(color);
 }
 
-Ball.prototype.update = function(delta){ 
+Ball.prototype.update = function(delta) { 
     this.position = this.position.add(this.velocity.mult(delta));
 
-    //berzes speeks
+    //berze
     this.velocity = this.velocity.mult(0.975); 
 
-    if(this.velocity.lenght() < 5){ //bumba apstāsies kad ātrums būs mazāks par ...
-        this.velocity.lenght = 0;
+    //kad par lēnu, apstādināt
+    if (this.velocity.lenght() < 5) { 
+        this.velocity = new Vector2(0, 0);
         this.moving = false;
     }
-    
-}
+};
+
 
 Ball.prototype.draw = function(){
     Canvas.drawImage(this.sprite, this.position, ball_origin);
 
 }
 
-Ball.prototype.shoot = function(power, rotation){
+Ball.prototype.shoot = function(power, rotation) {
+    if (this.moving) return; //kamēr kustās neatlaut sist pa bumbu
+
     this.velocity = new Vector2(power * Math.cos(rotation), power * Math.sin(rotation));
     this.moving = true;
-}
+};
+
 
 Ball.prototype.collideWithBall = function(ball) {
     // normalvektors

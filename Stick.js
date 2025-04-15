@@ -31,27 +31,37 @@ Stick.prototype.updateRotation = function() {
     let opposite = Mouse.position.y - this.position.y;
     let adjacent = Mouse.position.x - this.position.x;
     
-    this.rotation = Math.atan2(opposite, adjacent);
+    let rotation = Math.atan2(opposite, adjacent);
+    
+    if (turn % 2 === 1) {
+        this.rotation = Math.max(-Math.PI, Math.min(0, rotation));
+    } else {
+        this.rotation = Math.max(0, Math.min(Math.PI, rotation));
+    }
 };
 
-Stick.prototype.increasePower = function(){
 
-    if(this.power > MAX_POWER){
+Stick.prototype.increasePower = function() {
+    if (this.power >= MAX_POWER) {
         return;
     }
 
-    this.power += 30;
-    this.origin.x += 2;
+    this.power += 80;
+
+    let maxRetractDistance = 50;
+    this.origin.x = Math.max(stick_origin.x - maxRetractDistance, this.origin.x + 2);
+};
+
+
+Stick.prototype.shoot = function() {
+    if (!this.shot) {
+        this.onShoot(this.power, this.rotation);
+        this.power = 0;
+        this.origin = stick_shot_origin.copy();
+        this.shot = true;
+    }
 }
 
-Stick.prototype.shoot = function(){
-
-    this.onShoot(this.power, this.rotation);
-    this.power = 0;
-    this.origin = stick_shot_origin.copy();
-    this.shot = true;
-
-}
 
 Stick.prototype.reposition = function(position){
 
