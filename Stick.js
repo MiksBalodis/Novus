@@ -1,6 +1,6 @@
 const stick_origin = new Vector2(2000, 22);
 const stick_shot_origin = new Vector2(2000, 22);
-const MAX_POWER = 3800;
+const MAX_POWER = 4800; //max power ko sticks var "atvilkt"
 
 function Stick(position, onShoot){
     this.position = position;
@@ -23,6 +23,7 @@ Stick.prototype.update = function() {
     }
 };
 
+//funkcija lai uzzimee sticku
 Stick.prototype.draw = function(){
     Canvas.drawImage(sprites.stick, this.position, this.origin, this.rotation);
 }
@@ -33,6 +34,7 @@ Stick.prototype.updateRotation = function() {
     
     let rotation = Math.atan2(opposite, adjacent);
     
+    //nosaka robezas lai nevar pagriezt uz sevi
     if (turn % 2 === 1) {
         this.rotation = Math.max(-Math.PI, Math.min(0, rotation));
     } else {
@@ -46,7 +48,7 @@ Stick.prototype.increasePower = function() {
         return;
     }
 
-    this.power += 80;
+    this.power += 70; //iedod poweru
 
     let maxRetractDistance = 50;
     this.origin.x = Math.max(stick_origin.x - maxRetractDistance, this.origin.x + 2);
